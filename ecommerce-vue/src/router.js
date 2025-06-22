@@ -107,6 +107,14 @@ const routes = [
         }
       },
       {
+        path:'/usermanage',
+        name:'usermanage',
+        component: () => import('./admin/UserManage.vue'),
+        meta: {
+          title: '用户管理'
+        }
+      },
+      {
         path:'/month',
         name:'month',
         component: () => import('./admin/Month.vue'),

@@ -21,7 +21,8 @@ public enum ResultCode {
     EMAIL_EXISTED(305, "邮箱已存在！"),
     CODE_ERROR(306, "验证码错误！"),
     FOCUS_ALREADY_EXISTS(307, "已关注！"),
-    TYPE_DOES_NOT_DELETE(303, "类型下有商品，不能删除！");
+    TYPE_DOES_NOT_DELETE(303, "类型下有商品，不能删除！"),
+    OPERATION_FAILED(308, "操作失败，请稍后重试！");
 
     private final Integer code;
     private final String msg;

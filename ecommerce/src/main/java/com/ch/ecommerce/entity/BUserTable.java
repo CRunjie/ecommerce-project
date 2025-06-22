@@ -18,4 +18,8 @@ public class BUserTable {
     private String token;
     @TableField(exist = false)
     private String code;
+    @TableField(exist = false)
+    private Integer currentPage;
+    @TableField(exist = false)
+    private Integer pageSize;
 }

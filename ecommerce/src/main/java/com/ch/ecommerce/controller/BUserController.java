@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/before/bUser")
@@ -45,4 +46,24 @@ public class BUserController {
         return bUserService.login(bUserTable);
     }
 
+    // 用户管理相关API
+    @PostMapping("/getUsersByPage")
+    public ApiResponse<Map<String, Object>> getUsersByPage(@RequestBody BUserTable bUserTable) {
+        return bUserService.getUsersByPage(bUserTable);
+    }
+    
+    @PostMapping("/addUser")
+    public ApiResponse<Object> addUser(@RequestBody BUserTable bUserTable) {
+        return bUserService.addUser(bUserTable);
+    }
+    
+    @PostMapping("/updateUser")
+    public ApiResponse<Object> updateUser(@RequestBody BUserTable bUserTable) {
+        return bUserService.updateUser(bUserTable);
+    }
+    
+    @PostMapping("/deleteUser")
+    public ApiResponse<Object> deleteUser(@RequestBody BUserTable bUserTable) {
+        return bUserService.deleteUser(bUserTable);
+    }
 }

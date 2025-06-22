@@ -68,6 +68,10 @@ const state = reactive({
 				{
 					index: "ordermanage",
 					title: "订单管理"
+				},
+				{
+					index: "usermanage",
+					title: "用户管理"
 				}
 			]
 		},

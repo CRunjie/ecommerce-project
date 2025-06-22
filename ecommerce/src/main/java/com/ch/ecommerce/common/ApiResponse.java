@@ -29,6 +29,12 @@ public class ApiResponse<T> implements Serializable {
     public static <E> ApiResponse<E> fail(ResultCode resultCode) {
         return new ApiResponseBuilder().fail(resultCode).build();
     }
+    
+    // 带自定义错误消息的失败响应静态方法
+    public static <E> ApiResponse<E> fail(ResultCode resultCode, String customMsg) {
+        return new ApiResponseBuilder().fail(resultCode).message(customMsg).build();
+    }
+    
     // 错误响应静态方法
     public static <E> ApiResponse<E> fail() {
         ResultCode resultCode = ResultCode.ERROR;
@@ -51,6 +57,11 @@ public class ApiResponse<T> implements Serializable {
         }
         public ApiResponseBuilder data(Object data) {
             response.resData = data;
+            return this;
+        }
+        
+        public ApiResponseBuilder message(String message) {
+            response.msg = message;
             return this;
         }
 
