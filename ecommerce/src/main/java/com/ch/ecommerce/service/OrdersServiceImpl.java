@@ -110,4 +110,87 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
     public ApiResponse<List<Map<String, Object>>> selectOrderByType() {
         return ApiResponse.success(ordersMapper.selectOrderByType());
     }
+
+    // 实现管理员查询所有订单的方法
+    @Override
+    public ApiResponse<Map<String, Object>> getAllOrders(OrdersEntity ordersEntity) {
+        // 默认每页显示5条记录
+        int pageSize = ordersEntity.getPageSize() != null ? ordersEntity.getPageSize() : 5;
+        Page<OrdersEntity> page = new Page<>(ordersEntity.getCurrentPage(), pageSize);
+        IPage<OrdersEntity> resultPage;
+        
+        try {
+            // 如果有商品ID参数，使用特殊的JOIN查询
+            if (ordersEntity.getGoodstableId() != null && ordersEntity.getGoodstableId() > 0) {
+                resultPage = ordersMapper.getOrdersByGoodsId(page, ordersEntity);
+            } else {
+                // 没有商品ID参数，使用原来的查询方法
+                QueryWrapper<OrdersEntity> queryWrapper = new QueryWrapper<>();
+                
+                // 订单金额区间查询
+                if (ordersEntity.getMinAmount() != null) {
+                    queryWrapper.ge("amount", ordersEntity.getMinAmount());
+                }
+                if (ordersEntity.getMaxAmount() != null) {
+                    queryWrapper.le("amount", ordersEntity.getMaxAmount());
+                }
+                
+                // 订单号范围查询
+                if (ordersEntity.getMinId() != null) {
+                    queryWrapper.ge("id", ordersEntity.getMinId());
+                }
+                if (ordersEntity.getMaxId() != null) {
+                    queryWrapper.le("id", ordersEntity.getMaxId());
+                }
+                
+                // 下单时间区间查询
+                if (ordersEntity.getStartDate() != null && !ordersEntity.getStartDate().isEmpty()) {
+                    queryWrapper.ge("orderdate", ordersEntity.getStartDate());
+                }
+                if (ordersEntity.getEndDate() != null && !ordersEntity.getEndDate().isEmpty()) {
+                    queryWrapper.le("orderdate", ordersEntity.getEndDate());
+                }
+                
+                // 订单支付状态查询
+                if (ordersEntity.getStatus() != null) {
+                    queryWrapper.eq("status", ordersEntity.getStatus());
+                }
+                
+                // 按下单时间降序排序
+                queryWrapper.orderByDesc("orderdate");
+                
+                // 执行分页查询
+                resultPage = page(page, queryWrapper);
+            }
+            
+            // 构造返回结果
+            Map<String, Object> result = new HashMap<>();
+            result.put("orders", resultPage.getRecords());
+            result.put("total", resultPage.getTotal());
+            result.put("pages", resultPage.getPages());
+            result.put("current", resultPage.getCurrent());
+            
+            return ApiResponse.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiResponse.fail();
+        }
+    }
+    
+    // 获取所有商品列表，用于订单查询下拉框
+    @Override
+    public ApiResponse<List<Map<String, Object>>> getAllGoodsForSelect() {
+        List<Map<String, Object>> goodsList = new ArrayList<>();
+        
+        List<GoodsEntity> goods = goodsService.list();
+        for (GoodsEntity good : goods) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", good.getId());
+            item.put("name", good.getGname());
+            item.put("price", good.getGrprice());
+            goodsList.add(item);
+        }
+        
+        return ApiResponse.success(goodsList);
+    }
 }

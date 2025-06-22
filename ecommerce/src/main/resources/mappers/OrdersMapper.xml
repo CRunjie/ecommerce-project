@@ -25,5 +25,41 @@
         <!-- AND ob.orderdate > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) -->
     GROUP BY
         gy.typename
-</select>
+    </select>
+    
+    <!-- 通过商品ID查询包含该商品的订单 -->
+    <select id="getOrdersByGoodsId" resultType="OrdersEntity">
+        SELECT DISTINCT
+            ob.*
+        FROM
+            orderbasetable ob
+            JOIN orderdetail od ON ob.id = od.orderbasetable_id
+        <where>
+            <if test="entity.goodstableId != null">
+                od.goodstable_id = #{entity.goodstableId}
+            </if>
+            <if test="entity.minAmount != null">
+                AND ob.amount >= #{entity.minAmount}
+            </if>
+            <if test="entity.maxAmount != null">
+                AND ob.amount &lt;= #{entity.maxAmount}
+            </if>
+            <if test="entity.minId != null">
+                AND ob.id >= #{entity.minId}
+            </if>
+            <if test="entity.maxId != null">
+                AND ob.id &lt;= #{entity.maxId}
+            </if>
+            <if test="entity.startDate != null and entity.startDate != ''">
+                AND ob.orderdate >= #{entity.startDate}
+            </if>
+            <if test="entity.endDate != null and entity.endDate != ''">
+                AND ob.orderdate &lt;= #{entity.endDate}
+            </if>
+            <if test="entity.status != null">
+                AND ob.status = #{entity.status}
+            </if>
+        </where>
+        ORDER BY ob.orderdate DESC
+    </select>
 </mapper>

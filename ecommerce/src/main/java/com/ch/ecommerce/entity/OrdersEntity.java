@@ -35,4 +35,17 @@ public class OrdersEntity {
     private List<Integer> bshoppingnum;
     @TableField(exist = false)
     private List<Integer> bgid;
+    // 新增用于管理员订单查询的字段
+    @TableField(exist = false)
+    private Double minAmount; // 最小订单金额
+    @TableField(exist = false)
+    private Double maxAmount; // 最大订单金额
+    @TableField(exist = false)
+    private Integer minId; // 最小订单号
+    @TableField(exist = false)
+    private Integer maxId; // 最大订单号
+    @TableField(exist = false)
+    private Integer pageSize; // 分页大小
+    @TableField(exist = false)
+    private Integer goodstableId; // 用于查询包含特定商品的订单
 }

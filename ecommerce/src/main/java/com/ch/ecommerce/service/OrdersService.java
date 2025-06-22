@@ -14,4 +14,6 @@ public interface OrdersService extends IService<OrdersEntity> {
     ApiResponse<List<Map<String,Object>>> getOrdersDetail(OrdersEntity ordersEntity);
     ApiResponse<List<OrdersEntity>> selectOrderByMonth(OrdersEntity ordersEntity);
     ApiResponse<List<Map<String, Object>>> selectOrderByType();
+    ApiResponse<Map<String, Object>> getAllOrders(OrdersEntity ordersEntity);
+    ApiResponse<List<Map<String, Object>>> getAllGoodsForSelect();
 }

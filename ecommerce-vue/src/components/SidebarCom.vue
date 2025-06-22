@@ -64,6 +64,10 @@ const state = reactive({
 				{
 					index: "goodsmanage",
 					title: "商品管理"
+				},
+				{
+					index: "ordermanage",
+					title: "订单管理"
 				}
 			]
 		},
