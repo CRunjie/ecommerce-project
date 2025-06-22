@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.ecommerce.mapper.FocusMapper">
+    <!--我的收藏-->
+    <select id="iPageMyFocusGoods" resultType="GoodsEntity">
+        select
+            gt.*, gy.typename
+        from goodstable  as gt
+                 join goodstype as gy on  gy.id = gt.goodstype_id
+                 join focustable as ft on ft.goodstable_id = gt.id
+            ${ew.customSqlSegment}
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.ecommerce.mapper.CartMapper">
+    <!--我的购物车-->
+    <select id="myCartGoods" resultType="map">
+        select
+            gt.*, ct.shoppingnum, ct.id cid
+        from goodstable  as gt
+                 join carttable as ct on ct.goodstable_id = gt.id
+        where ct.busertable_id = #{uid}
+    </select>
+</mapper>

@@ -1,0 +1,82 @@
+# Java Spring Boot 忽略文件
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# 日志文件
+logs/
+*.log
+log/
+temp/
+
+# IDE 文件
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+nbproject/
+
+# Vue.js 前端忽略文件
+node_modules/
+ecommerce-vue/node_modules/
+ecommerce-vue/dist/
+ecommerce-vue/dist-ssr/
+ecommerce-vue/.vite/
+*.local
+
+# 系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 环境配置文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 依赖缓存
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# 临时文件
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
+
+# 生产构建文件
+build/
+out/
+
+# 测试覆盖率报告
+coverage/
+.coverage
+htmlcov/
+.nyc_output
+
+# 其他不需要版本控制的文件
+*.class
+*.jar 

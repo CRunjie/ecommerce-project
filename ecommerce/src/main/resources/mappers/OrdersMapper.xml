@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.ecommerce.mapper.OrdersMapper">
+    <select id="getOrdersDetail" resultType="map" parameterType="OrdersEntity">
+        select
+            gt.id, gt.gname, gt.grprice, od.shoppingnum, gt.grprice * od.shoppingnum smallTotal
+        from orderdetail  as od
+                 join goodstable as gt on  od.goodstable_id = gt.id
+            where od.orderbasetable_id = #{id}
+    </select>
+    <!-- 按类型统计（最近1年的） -->
+    <select id="selectOrderByType" resultType="map">
+        SELECT
+            SUM(gt.grprice * od.shoppingnum) AS value,
+            gy.typename AS name
+        FROM
+            orderbasetable ob
+            JOIN orderdetail od ON ob.id = od.orderbasetable_id
+            JOIN goodstable gt ON od.goodstable_id = gt.id
+            JOIN goodstype gy ON gt.goodstype_id = gy.id
+        WHERE
+            ob.status = 1
+        <!-- AND ob.orderdate > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) -->
+    GROUP BY
+        gy.typename
+</select>
+</mapper>

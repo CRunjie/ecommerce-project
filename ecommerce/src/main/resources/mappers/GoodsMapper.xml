@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.ecommerce.mapper.GoodsMapper">
+    <!--
+    ${ew.customSqlSegment}是一个动态SQL语句占位符，可以用于构建复杂的SQL查询条件。
+    其中，ew是一个Wrapper对象，用于构建查询条件。在ew对象中，可以使用各种方法来构建查询条件，例如：
+eq：相等条件ne：不等条件like：模糊查询条件in：包含条件between：范围查询条件
+等等使用${ew.customSqlSegment}时，MyBatis-Plus会将ew对象中构建的查询条件转化为SQL语句，并将其插入到${ew.customSqlSegment}占位符位置。这样就可以在SQL语句中动态构建查询条件，实现更加灵活的查询功能。
+    -->
+    <select id="iPageGoods" resultType="GoodsEntity">
+        select
+            gt.*, gy.typename
+        from goodstable  as gt
+                 join goodstype as gy on  gy.id = gt.goodstype_id
+            ${ew.customSqlSegment}
+    </select>
+
+</mapper>
