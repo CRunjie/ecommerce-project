@@ -1,10 +1,12 @@
 package com.ch.ecommerce.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ch.ecommerce.common.ApiResponse;
+import com.ch.ecommerce.common.ResultCode;
 import com.ch.ecommerce.entity.CartTable;
 import com.ch.ecommerce.entity.GoodsEntity;
 import com.ch.ecommerce.entity.OrderdetailEntity;
@@ -32,6 +34,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
     public ApiResponse<OrdersEntity> submitOrder(OrdersEntity ordersEntity) {
         ordersEntity.setStatus(0);
         ordersEntity.setOrderdate(new Date());
+        ordersEntity.setIsDeleted(0); // 设置为未删除状态
         //生成订单
         save(ordersEntity);
         //生成订单详情
@@ -54,10 +57,16 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
         orderDetailService.saveBatch(bods);
         //批量更新库存
         goodsService.updateBatchById(ges);
-        //清空购物车
-        CartTable cartEntity = new CartTable();
-        cartEntity.setBusertableId(ordersEntity.getBusertableId());
-        cartService.clearCart(cartEntity);
+        
+        // 只删除已选中的商品（已结算的商品）
+        for (Integer goodsId : bgid) {
+            // 构建删除条件
+            LambdaQueryWrapper<CartTable> deleteWrapper = new LambdaQueryWrapper<>();
+            deleteWrapper.eq(CartTable::getBusertableId, ordersEntity.getBusertableId())
+                        .eq(CartTable::getGoodstableId, goodsId);
+            cartService.remove(deleteWrapper);
+        }
+        
         return ApiResponse.success(ordersEntity);
     }
 
@@ -68,6 +77,8 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
         //构造条件
         QueryWrapper<OrdersEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("busertable_id", ordersEntity.getBusertableId());
+        // 只查询未被用户删除的订单
+        queryWrapper.eq("is_deleted", 0);
         //分页查询（商品管理进来时初始查询及条件查询）
         IPage<OrdersEntity> page = page(iPage,queryWrapper);
         Map<String, Object> myres = new HashMap<>();
@@ -156,6 +167,12 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
                     queryWrapper.eq("status", ordersEntity.getStatus());
                 }
                 
+                // 删除状态查询 - 如果指定了isDeleted值，则按指定值查询
+                if (ordersEntity.getIsDeleted() != null) {
+                    queryWrapper.eq("is_deleted", ordersEntity.getIsDeleted());
+                }
+                // 否则查询所有订单，不管是否被用户删除
+                
                 // 按下单时间降序排序
                 queryWrapper.orderByDesc("orderdate");
                 
@@ -192,5 +209,33 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
         }
         
         return ApiResponse.success(goodsList);
+    }
+    
+    // 实现用户端逻辑删除订单的方法
+    @Override
+    public ApiResponse<Object> deleteOrderByUser(OrdersEntity ordersEntity) {
+        // 检查订单是否存在
+        OrdersEntity existOrder = getById(ordersEntity.getId());
+        if (existOrder == null) {
+            return ApiResponse.fail(ResultCode.NOT_FOUND, "订单不存在");
+        }
+        
+        // 检查订单是否属于当前用户
+        if (!existOrder.getBusertableId().equals(ordersEntity.getBusertableId())) {
+            return ApiResponse.fail(ResultCode.FORBIDDEN, "无权操作此订单");
+        }
+        
+        // 检查订单状态，只有已支付的订单才能删除
+        if (existOrder.getStatus() != 1) {
+            return ApiResponse.fail(ResultCode.OPERATION_FAILED, "只能删除已支付的订单");
+        }
+        
+        // 执行逻辑删除
+        existOrder.setIsDeleted(1);
+        if (updateById(existOrder)) {
+            return ApiResponse.success();
+        } else {
+            return ApiResponse.fail(ResultCode.OPERATION_FAILED, "删除订单失败");
+        }
     }
 }

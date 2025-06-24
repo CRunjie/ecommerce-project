@@ -8,7 +8,9 @@
             gt.id, gt.gname, gt.grprice, od.shoppingnum, gt.grprice * od.shoppingnum smallTotal
         from orderdetail  as od
                  join goodstable as gt on  od.goodstable_id = gt.id
+                 join orderbasetable as ob on od.orderbasetable_id = ob.id
             where od.orderbasetable_id = #{id}
+            and (ob.is_deleted = 0 OR ob.is_deleted IS NULL)
     </select>
     <!-- 按类型统计（最近1年的） -->
     <select id="selectOrderByType" resultType="map">
@@ -22,10 +24,11 @@
             JOIN goodstype gy ON gt.goodstype_id = gy.id
         WHERE
             ob.status = 1
+            AND (ob.is_deleted = 0 OR ob.is_deleted IS NULL)
         <!-- AND ob.orderdate > DATE_SUB(CURDATE(), INTERVAL 1 YEAR) -->
     GROUP BY
         gy.typename
-    </select>
+</select>
     
     <!-- 通过商品ID查询包含该商品的订单 -->
     <select id="getOrdersByGoodsId" resultType="OrdersEntity">
@@ -59,7 +62,13 @@
             <if test="entity.status != null">
                 AND ob.status = #{entity.status}
             </if>
+            <if test="entity.isDeleted != null">
+                AND ob.is_deleted = #{entity.isDeleted}
+            </if>
+            <if test="entity.isDeleted == null">
+                AND (ob.is_deleted = 0 OR ob.is_deleted IS NULL)
+            </if>
         </where>
         ORDER BY ob.orderdate DESC
-    </select>
+</select>
 </mapper>

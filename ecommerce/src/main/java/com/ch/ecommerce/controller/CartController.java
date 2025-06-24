@@ -36,4 +36,12 @@ public class CartController {
     public ApiResponse<List<Map<String, Object>>> myCartGoods(@RequestBody CartTable cartTable) {
         return cartService.myCartGoods(cartTable);
     }
+    @RequestMapping("/updateSelected")
+    public ApiResponse<Object> updateCartSelected(@RequestBody CartTable cartTable) {
+        return cartService.updateCartSelected(cartTable);
+    }
+    @RequestMapping("/getSelectedGoods")
+    public ApiResponse<List<Map<String, Object>>> getSelectedCartGoods(@RequestBody CartTable cartTable) {
+        return cartService.getSelectedCartGoods(cartTable);
+    }
 }

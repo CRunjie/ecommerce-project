@@ -6,7 +6,7 @@
     <!--我的购物车-->
     <select id="myCartGoods" resultType="map">
         select
-            gt.*, ct.shoppingnum, ct.id cid
+            gt.*, ct.shoppingnum, ct.id cid, ct.selected
         from goodstable  as gt
                  join carttable as ct on ct.goodstable_id = gt.id
         where ct.busertable_id = #{uid}

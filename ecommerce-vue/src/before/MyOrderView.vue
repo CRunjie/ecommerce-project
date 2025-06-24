@@ -26,6 +26,12 @@
                   <el-button size="small" type="danger">取消</el-button>
                 </template>
               </el-popconfirm>
+              <el-popconfirm v-if="scope.row.status === 1" confirm-button-text="是" cancel-button-text="否" icon-color="#F56C6C"
+                title="确定要删除该订单吗？删除后将不可恢复查看" @confirm="deleteOrder(scope.row)" @cancel="cancelDelete">
+                <template #reference>
+                  <el-button size="small" type="danger">删除</el-button>
+                </template>
+              </el-popconfirm>
             </el-row>
           </template>
         </el-table-column>
@@ -128,6 +134,36 @@ const handleDetail = (row) => {
       ElMessage.error(error)
   })
 }
+
+// 删除订单
+const deleteOrder = (row) => {
+  axios.myPost('/api/before/orders/deleteOrder',
+  {
+    id: row.id,
+    busertableId: sessionStorage.getItem('bid')
+  })
+  .then(res => {
+    if (res.data.code === 200) {
+      ElMessage.success({message: '订单删除成功！', type: 'success'})
+      // 重新加载订单列表
+      loadOrders()
+    } else {
+      ElMessage.error(res.data.msg || '删除订单失败')
+    }
+  })
+  .catch((error) => {
+    ElMessage.error(error)
+  })
+}
+
+// 取消删除
+const cancelDelete = () => {
+  ElMessage({
+    type: 'info',
+    message: '已取消删除'
+  })
+}
+
 const goClose = () => {
     //跳转到前一个页面
     let path = route.query.redirect

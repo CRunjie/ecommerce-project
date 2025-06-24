@@ -13,4 +13,6 @@ public interface CartService extends IService<CartTable> {
     ApiResponse<Object> clearCart(CartTable cartTable);
     ApiResponse<Object> removeCart(CartTable cartTable);
     ApiResponse<List<Map<String, Object>>> myCartGoods(CartTable cartTable);
+    ApiResponse<Object> updateCartSelected(CartTable cartTable);
+    ApiResponse<List<Map<String, Object>>> getSelectedCartGoods(CartTable cartTable);
 }

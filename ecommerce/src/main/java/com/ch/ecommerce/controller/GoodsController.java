@@ -76,7 +76,7 @@ public class GoodsController {
     public ApiResponse<List<Map<String, Object>>> selectOrderByType() {
         return ordersService.selectOrderByType();
     }
-    
+
     // 新增管理员查询订单接口
     @PostMapping("/getAllOrders")
     public ApiResponse<Map<String, Object>> getAllOrders(@RequestBody OrdersEntity ordersEntity) {

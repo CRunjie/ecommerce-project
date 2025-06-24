@@ -37,4 +37,9 @@ public class OrdersController {
     public ApiResponse<List<Map<String,Object>>> getOrdersDetail(@RequestBody OrdersEntity ordersEntity){
         return ordersService.getOrdersDetail(ordersEntity);
     }
+    
+    @PostMapping("/deleteOrder")
+    public ApiResponse<Object> deleteOrder(@RequestBody OrdersEntity ordersEntity){
+        return ordersService.deleteOrderByUser(ordersEntity);
+    }
 }

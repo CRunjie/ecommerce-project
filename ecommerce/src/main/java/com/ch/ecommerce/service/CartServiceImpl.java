@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl
@@ -36,6 +37,8 @@ public class CartServiceImpl
                     " and goodstable_id = " + cartTable.getGoodstableId());
             b = this.update(updateWrapper);
         } else {
+            // 默认新添加的商品为选中状态
+            cartTable.setSelected(1);
             b = save(cartTable);
         }
         if (b)//成功
@@ -49,11 +52,15 @@ public class CartServiceImpl
     public ApiResponse<Object> updateCart(CartTable cartTable) {
         List<Integer> bCid = cartTable.getBcid();
         List<Integer> bShoppingNum = cartTable.getBshoppingnum();
+        List<Integer> bSelected = cartTable.getBselected();
         List<CartTable> bCarts = new ArrayList<CartTable>();
         for (int i = 0; i < bCid.size(); i++) {
             CartTable ce = new CartTable();
             ce.setId(bCid.get(i));
             ce.setShoppingnum(bShoppingNum.get(i));
+            if (bSelected != null && bSelected.size() > i) {
+                ce.setSelected(bSelected.get(i));
+            }
             bCarts.add(ce);
         }
         this.updateBatchById(bCarts);//批量更新
@@ -84,5 +91,24 @@ public class CartServiceImpl
     public ApiResponse<List<Map<String, Object>>> myCartGoods(CartTable cartTable) {
         List<Map<String, Object>> cartGoods = cartMapper.myCartGoods(cartTable.getBusertableId());
         return ApiResponse.success(cartGoods);
+    }
+    
+    @Override
+    public ApiResponse<Object> updateCartSelected(CartTable cartTable) {
+        boolean b = updateById(cartTable);
+        if (b)
+            return ApiResponse.success();
+        else
+            return ApiResponse.fail();
+    }
+    
+    @Override
+    public ApiResponse<List<Map<String, Object>>> getSelectedCartGoods(CartTable cartTable) {
+        List<Map<String, Object>> allCartGoods = cartMapper.myCartGoods(cartTable.getBusertableId());
+        // 过滤出已选中的商品
+        List<Map<String, Object>> selectedGoods = allCartGoods.stream()
+                .filter(item -> Integer.valueOf(1).equals(item.get("selected")))
+                .collect(Collectors.toList());
+        return ApiResponse.success(selectedGoods);
     }
 }

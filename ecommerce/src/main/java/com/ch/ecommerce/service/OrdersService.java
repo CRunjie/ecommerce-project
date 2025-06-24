@@ -16,4 +16,7 @@ public interface OrdersService extends IService<OrdersEntity> {
     ApiResponse<List<Map<String, Object>>> selectOrderByType();
     ApiResponse<Map<String, Object>> getAllOrders(OrdersEntity ordersEntity);
     ApiResponse<List<Map<String, Object>>> getAllGoodsForSelect();
+    
+    // 用户端逻辑删除订单
+    ApiResponse<Object> deleteOrderByUser(OrdersEntity ordersEntity);
 }

@@ -17,8 +17,11 @@ public class CartTable {
     private Integer busertableId;
     private Integer goodstableId;
     private Integer shoppingnum;
+    private Integer selected;  // 0-未选中, 1-已选中
     @TableField(exist = false)
     private List<Integer> bshoppingnum;
     @TableField(exist = false)
     private List<Integer> bcid;
+    @TableField(exist = false)
+    private List<Integer> bselected;
 }

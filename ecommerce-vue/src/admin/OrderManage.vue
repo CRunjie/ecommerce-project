@@ -35,6 +35,13 @@
               <el-option label="已支付" :value="1" />
             </el-select>
           </el-form-item>
+          <el-form-item label="删除状态">
+            <el-select v-model="searchForm.isDeleted" placeholder="全部" style="width: 120px;">
+              <el-option label="全部" :value="null" />
+              <el-option label="未删除" :value="0" />
+              <el-option label="已删除" :value="1" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="包含商品">
             <el-select v-model="searchForm.goodstableId" placeholder="选择商品" clearable filterable style="width: 220px;">
               <el-option label="全部商品" :value="null" />
@@ -78,6 +85,13 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="用户可见" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.isDeleted === 1 ? 'danger' : 'info'">
+              {{ scope.row.isDeleted === 1 ? '已删除' : '可见' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
             <el-button type="primary" size="small" @click="viewOrderDetail(scope.row)">查看详情</el-button>
@@ -110,6 +124,11 @@
       <p><strong>订单状态：</strong>
         <el-tag :type="currentOrder.status === 1 ? 'success' : 'warning'">
           {{ currentOrder.status === 1 ? '已支付' : '未支付' }}
+        </el-tag>
+      </p>
+      <p><strong>用户可见状态：</strong>
+        <el-tag :type="currentOrder.isDeleted === 1 ? 'danger' : 'info'">
+          {{ currentOrder.isDeleted === 1 ? '用户已删除（仅管理员可见）' : '用户可见' }}
         </el-tag>
       </p>
     </div>
@@ -161,6 +180,7 @@ const searchForm = reactive({
   startDate: '',
   endDate: '',
   status: null,
+  isDeleted: null,
   goodstableId: null,
 })
 
@@ -279,7 +299,7 @@ const searchOrders = () => {
 // 重置搜索条件
 const resetSearch = () => {
   Object.keys(searchForm).forEach(key => {
-    searchForm[key] = key === 'status' || key === 'goodstableId' ? null : ''
+    searchForm[key] = key === 'status' || key === 'isDeleted' || key === 'goodstableId' ? null : ''
   })
   dateRange.value = []
   currentPage.value = 1

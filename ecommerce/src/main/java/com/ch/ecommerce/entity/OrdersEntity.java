@@ -21,6 +21,7 @@ public class OrdersEntity {
     private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orderdate;
+    private Integer isDeleted; // 0-未删除, 1-已删除（用户端不可见）
     @TableField(exist = false)
     private Integer currentPage;
     @TableField(exist = false)
