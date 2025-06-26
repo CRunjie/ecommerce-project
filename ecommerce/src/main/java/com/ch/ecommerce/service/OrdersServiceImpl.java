@@ -238,4 +238,47 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, OrdersEntity> i
             return ApiResponse.fail(ResultCode.OPERATION_FAILED, "删除订单失败");
         }
     }
+
+    @Override
+    @Transactional
+    public ApiResponse<Object> cancelOrder(OrdersEntity ordersEntity) {
+        // 检查订单是否存在
+        OrdersEntity existOrder = getById(ordersEntity.getId());
+        if (existOrder == null) {
+            return ApiResponse.fail(ResultCode.NOT_FOUND, "订单不存在");
+        }
+        
+        // 检查订单是否属于当前用户
+        if (!existOrder.getBusertableId().equals(ordersEntity.getBusertableId())) {
+            return ApiResponse.fail(ResultCode.FORBIDDEN, "无权操作此订单");
+        }
+        
+        // 检查订单状态，只能取消未支付的订单
+        if (existOrder.getStatus() != 0) {
+            return ApiResponse.fail(ResultCode.OPERATION_FAILED, "只能取消未支付的订单");
+        }
+
+        // 获取订单详情，恢复商品库存
+        List<Map<String, Object>> orderDetails = ordersMapper.getOrdersDetail(existOrder);
+        for (Map<String, Object> detail : orderDetails) {
+            // 获取商品ID和购买数量
+            Integer goodsId = (Integer) detail.get("id");
+            Integer shoppingNum = (Integer) detail.get("shoppingnum");
+            
+            // 恢复商品库存
+            GoodsEntity goods = goodsService.getById(goodsId);
+            if (goods != null) {
+                goods.setGstore(goods.getGstore() + shoppingNum);
+                goodsService.updateById(goods);
+            }
+        }
+
+        // 执行逻辑删除
+        existOrder.setIsDeleted(1);
+        if (updateById(existOrder)) {
+            return ApiResponse.success();
+        } else {
+            return ApiResponse.fail(ResultCode.OPERATION_FAILED, "取消订单失败");
+        }
+    }
 }

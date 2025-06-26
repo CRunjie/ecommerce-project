@@ -19,4 +19,7 @@ public interface OrdersService extends IService<OrdersEntity> {
     
     // 用户端逻辑删除订单
     ApiResponse<Object> deleteOrderByUser(OrdersEntity ordersEntity);
+    
+    // 取消未支付的订单
+    ApiResponse<Object> cancelOrder(OrdersEntity ordersEntity);
 }

@@ -42,4 +42,9 @@ public class OrdersController {
     public ApiResponse<Object> deleteOrder(@RequestBody OrdersEntity ordersEntity){
         return ordersService.deleteOrderByUser(ordersEntity);
     }
+
+    @PostMapping("/cancelOrder")
+    public ApiResponse<Object> cancelOrder(@RequestBody OrdersEntity ordersEntity){
+        return ordersService.cancelOrder(ordersEntity);
+    }
 }

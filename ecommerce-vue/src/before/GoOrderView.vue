@@ -11,8 +11,8 @@
        <el-table-column  label="商品名称">
            <template #default="scope">
                      <el-link @click="goToGoodsDetail(scope.row)" underline="never">
-              <span>{{scope.row.gname}}</span>
-          </el-link>
+               <span>{{scope.row.gname}}</span>
+           </el-link>
          </template>
        </el-table-column>
        <el-table-column label="商品实价">

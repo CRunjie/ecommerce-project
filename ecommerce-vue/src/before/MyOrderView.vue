@@ -21,7 +21,7 @@
             <el-row>
               <el-button size="small" type="primary"  @click="handleDetail(scope.row)">详情</el-button>
               <el-popconfirm v-if="scope.row.status === 0" confirm-button-text="是" cancel-button-text="否" :icon="InfoFilled" icon-color="#626AEF"
-                title="真的取消吗？" @confirm="confirmEvent()" @cancel="cancelEvent">
+                title="真的取消吗？" @confirm="confirmEvent(scope.row)" @cancel="cancelEvent">
                 <template #reference>
                   <el-button size="small" type="danger">取消</el-button>
                 </template>
@@ -153,6 +153,35 @@ const deleteOrder = (row) => {
   })
   .catch((error) => {
     ElMessage.error(error)
+  })
+}
+
+// 取消订单
+const confirmEvent = (row) => {
+  axios.myPost('/api/before/orders/cancelOrder',
+  {
+    id: row.id,
+    busertableId: sessionStorage.getItem('bid')
+  })
+  .then(res => {
+    if (res.data.code === 200) {
+      ElMessage.success({message: '订单取消成功！', type: 'success'})
+      // 重新加载订单列表
+      loadOrders()
+    } else {
+      ElMessage.error(res.data.msg || '取消订单失败')
+    }
+  })
+  .catch((error) => {
+    ElMessage.error(error)
+  })
+}
+
+// 取消操作
+const cancelEvent = () => {
+  ElMessage({
+    type: 'info',
+    message: '已取消操作'
   })
 }
 

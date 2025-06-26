@@ -160,7 +160,7 @@ const goClose = (n) => {
         return
       }
       router.push({name: 'goOrder'})
-    }
+}
 }
 
 //删除购物车
