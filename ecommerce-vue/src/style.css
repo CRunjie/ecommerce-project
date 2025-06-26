@@ -3,23 +3,32 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #333333;
+  background-color: #f9f5fa;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* 玩偶主题色彩变量 */
+  --doll-primary: #ff79a8;
+  --doll-secondary: #a387ca;
+  --doll-accent: #ffc2d1;
+  --doll-light: #fbf0f5;
+  --doll-dark: #745a8d;
+  --doll-text: #4a3a5a;
+  --doll-bg: #f9f5fa;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--doll-secondary);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--doll-primary);
 }
 
 body {
@@ -28,34 +37,43 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--doll-bg);
+  color: var(--doll-text);
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: var(--doll-primary);
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 20px;
+  border: 2px solid var(--doll-accent);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: white;
+  color: var(--doll-secondary);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.25s ease;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--doll-primary);
+  background-color: var(--doll-accent);
+  color: white;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 3px solid var(--doll-accent);
 }
 
 .card {
   padding: 2em;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: white;
 }
 
 #app {
@@ -63,17 +81,20 @@ button:focus-visible {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: var(--doll-bg);
+  width: 100%;
 }
 
-@media (prefers-color-scheme: light) {
+/* 覆盖默认的深色主题 */
+@media (prefers-color-scheme: dark) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--doll-text);
+    background-color: var(--doll-bg);
   }
   a:hover {
-    color: #747bff;
+    color: var(--doll-primary);
   }
   button {
-    background-color: #f9f9f9;
+    background-color: white;
   }
 }

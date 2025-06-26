@@ -1,6 +1,10 @@
 <template>
      <el-dialog title="我的购物车" v-model="myfocusVisible" width="50%" @close="goClose(1)">
-      <el-table ref="tableRef" :data="goodslists" border :key="itemKey" @selection-change="handleSelectionChange" row-key="cid">
+      <div v-if="!isLoggedIn" class="login-reminder">
+        <p>您尚未登录，请先登录账号再查看购物车</p>
+        <el-button type="primary" @click="goToLogin">去登录</el-button>
+      </div>
+      <el-table v-else ref="tableRef" :data="goodslists" border :key="itemKey" @selection-change="handleSelectionChange" row-key="cid">
         <el-table-column type="selection" width="55" :reserve-selection="true" />
         <el-table-column label="图片">
           <template #default="scope">
@@ -40,12 +44,16 @@
         </el-table-column>
       </el-table>
       <br>
-      <div v-if="goodslists.length > 0">
+      <div v-if="isLoggedIn && goodslists.length > 0">
         已选择商品总价：¥ {{ selectedTotalPrice.toFixed(1) }} &nbsp;
         <el-button type="success" :icon="ShoppingBag" @click="goClose(2)" :disabled="selectedItems.length === 0">去结算</el-button>
         <el-button type="primary" @click="selectAll">全选</el-button>
         <el-button type="info" @click="unselectAll">取消全选</el-button>
         <el-button type="danger" :icon="Delete" @click="removeAll">清空购物车</el-button>
+      </div>
+      <div v-else-if="isLoggedIn && goodslists.length === 0" class="empty-cart">
+        <p>您的购物车还是空的，快去选购喜欢的玩偶吧！</p>
+        <el-button type="primary" @click="goToIndex">去购物</el-button>
       </div>
   </el-dialog>
 </template>
@@ -63,11 +71,21 @@ let itemKey = ref(0)
 const selectedItems = ref([])
 const tableRef = ref(null)
 const isUpdatingSelection = ref(false)
+const isLoggedIn = ref(false)
+const userId = ref(null)
 
 //组件初始化
 onMounted(() => {
+  checkLoginStatus()
   loadGoods()
 })
+
+// 检查登录状态
+const checkLoginStatus = () => {
+  const bid = sessionStorage.getItem('bid')
+  userId.value = bid
+  isLoggedIn.value = bid !== null
+}
 
 // 获取assets静态资源
 const getAssetsFile = (url) => {
@@ -76,12 +94,17 @@ const getAssetsFile = (url) => {
 
 //加载商品信息
 const loadGoods = () => {
+  if (!isLoggedIn.value) {
+    goodslists.value = []
+    return
+  }
+  
   axios.myPost('/api/before/cart/myCart',
   {
-    busertableId: sessionStorage.getItem('bid')
+    busertableId: userId.value
   })
   .then(res => {
-      goodslists.value = res.data.resData;
+      goodslists.value = res.data.resData || [];
       
       // 设置商品的选中状态
       goodslists.value.forEach(item => {
@@ -102,8 +125,22 @@ const loadGoods = () => {
       });
   })
   .catch((error) => {
-      ElMessage.error(error)
+      ElMessage.error('获取购物车数据失败，请稍后再试')
+      console.error(error)
   })
+}
+
+// 跳转到登录页面
+const goToLogin = () => {
+  router.push({
+    name: 'login',
+    query: { redirect: route.fullPath }
+  })
+}
+
+// 跳转到首页
+const goToIndex = () => {
+  router.push({ name: 'index' })
 }
 
 // 设置表格选中状态
@@ -134,6 +171,13 @@ const goToGoodsDetail = (goods) => {
 }
 
 const goClose = (n) => {
+    // 如果未登录，直接返回
+    if (!isLoggedIn.value) {
+      let path = route.query.redirect
+      router.replace({ path: path === '/' || path === undefined ? '/' : path })
+      return
+    }
+    
     //修改完购物车后，关闭对话框时批量更新
     let cids = []
     let shoppingnums = []
@@ -144,12 +188,19 @@ const goClose = (n) => {
         shoppingnums[i] = item.shoppingnum
         selecteds[i] = item.selected
     }
-    axios.myPost('/api/before/cart/bupDateCart',
-    {
-      bcid: cids,
-      bshoppingnum: shoppingnums,
-      bselected: selecteds
-    })
+    
+    if (goodslists.value.length > 0) {
+      axios.myPost('/api/before/cart/bupDateCart',
+      {
+        bcid: cids,
+        bshoppingnum: shoppingnums,
+        bselected: selecteds
+      }).catch(error => {
+        ElMessage.error('更新购物车失败')
+        console.error(error)
+      })
+    }
+    
     //跳转到前一个页面
     let path = route.query.redirect
     if(n === 1) { //关闭
@@ -160,7 +211,7 @@ const goClose = (n) => {
         return
       }
       router.push({name: 'goOrder'})
-}
+    }
 }
 
 //删除购物车
@@ -255,3 +306,28 @@ watch(goodslists, () => {
   });
 }, { deep: true });
 </script>
+<style scoped>
+.login-reminder {
+  text-align: center;
+  padding: 30px;
+}
+
+.login-reminder p {
+  color: var(--doll-secondary);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 30px;
+}
+
+.empty-cart p {
+  color: var(--doll-text);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Add your other styles here */
+</style>

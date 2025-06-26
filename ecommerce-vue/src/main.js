@@ -16,5 +16,5 @@ app.use(router)
 app.mount('#app')
 //通过路由的meta属性设置组件的title
 router.beforeEach((to, from) => {
-  document.title = to.meta.title || 'E-commerce'
+  document.title = to.meta.title || '玩偶世界 - DollVerse'
 })

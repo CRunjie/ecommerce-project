@@ -89,6 +89,9 @@ public class CartServiceImpl
 
     @Override
     public ApiResponse<List<Map<String, Object>>> myCartGoods(CartTable cartTable) {
+        if (cartTable == null || cartTable.getBusertableId() == null) {
+            return ApiResponse.success(new ArrayList<>());
+        }
         List<Map<String, Object>> cartGoods = cartMapper.myCartGoods(cartTable.getBusertableId());
         return ApiResponse.success(cartGoods);
     }
@@ -104,6 +107,9 @@ public class CartServiceImpl
     
     @Override
     public ApiResponse<List<Map<String, Object>>> getSelectedCartGoods(CartTable cartTable) {
+        if (cartTable == null || cartTable.getBusertableId() == null) {
+            return ApiResponse.success(new ArrayList<>());
+        }
         List<Map<String, Object>> allCartGoods = cartMapper.myCartGoods(cartTable.getBusertableId());
         // 过滤出已选中的商品
         List<Map<String, Object>> selectedGoods = allCartGoods.stream()

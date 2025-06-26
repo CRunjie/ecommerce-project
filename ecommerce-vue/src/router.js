@@ -6,7 +6,7 @@ const routes = [
     name: 'index',
     component: () => import('./before/IndexView.vue'),
     meta: {
-      title: '首页'
+      title: '玩偶世界 - 首页'
     }
   },
   {
@@ -14,7 +14,7 @@ const routes = [
     name: 'login',
     component: () => import('./before/LoginView.vue'),
     meta: {
-      title: '用户登录'
+      title: '玩偶世界 - 用户登录'
     }
   },
   {
@@ -22,7 +22,7 @@ const routes = [
     name:'register',
     component: () => import('./before/RegisterView.vue'),
     meta: {
-      title: '用户注册'
+      title: '玩偶世界 - 用户注册'
     }
   },
   {
@@ -30,7 +30,7 @@ const routes = [
     name: 'goodsDetail',
     component: () => import('./before/GoodsDetailView.vue'),
     meta: {
-      title: '商品详情'
+      title: '玩偶详情'
     }
   },
   {
@@ -70,7 +70,7 @@ const routes = [
     name: 'admin-login',
     component: Login,
     meta: {
-      title: '后台登录'
+      title: '玩偶世界 - 后台登录'
     }
   },
   {
@@ -78,7 +78,7 @@ const routes = [
     name: 'home',
     component: () => import('./admin/Home.vue'),
     meta: {
-      title: '后台管理'
+      title: '玩偶世界 - 后台管理'
     },
     redirect: '/typemanage',
     children: [
